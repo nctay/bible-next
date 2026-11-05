@@ -6,6 +6,19 @@ const files = self.OFFLINE_RELEASE.urls.map(path => ({
   integrity: self.OFFLINE_RELEASE.integrity[path],
 }));
 const marker = new URL('./offline-ready', self.registration.scope).href;
+function isPage(file) {
+  return file.url === self.registration.scope || new URL(file.url).pathname.endsWith('/index.html');
+}
+async function fetchPage(file) {
+  const response = await fetch(new Request(file.url, { cache: 'reload' }));
+  const html = await response.clone().text();
+  // Hosting may append its own scripts; verify our release stamp and hashed entrypoints instead of HTML bytes.
+  if (!response.ok || !html.includes(`<meta name="bible-release" content="${self.OFFLINE_RELEASE.id}">`) ||
+      !self.OFFLINE_RELEASE.entrypoints.every(path => html.includes(`"${path}"`))) {
+    throw new Error('Wrong HTML release');
+  }
+  return response;
+}
 
 async function complete() {
   if (!(await caches.has(CACHE))) return false;
@@ -18,7 +31,8 @@ async function saved() {
 async function download() {
   const cache = await caches.open(CACHE);
   // Integrity prevents a deployment changing midway from producing a mixed release.
-  await cache.addAll(files.map(file => new Request(file.url, { cache: 'reload', integrity: file.integrity })));
+  await cache.addAll(files.filter(file => !isPage(file)).map(file => new Request(file.url, { cache: 'reload', integrity: file.integrity })));
+  for (const file of files.filter(isPage)) await cache.put(file.url, await fetchPage(file));
   if (!(await complete())) throw new Error('Incomplete release');
 }
 self.addEventListener('install', event => {
@@ -72,6 +86,6 @@ self.addEventListener('fetch', event => {
   event.respondWith((async () => {
     const cached = await caches.match(file.url, { cacheName: CACHE, ignoreVary: true });
     if (cached) return cached;
-    return fetch(new Request(file.url, { integrity: file.integrity, cache: 'no-cache' }));
+    return isPage(file) ? fetchPage(file) : fetch(new Request(file.url, { integrity: file.integrity, cache: 'no-cache' }));
   })());
 });
