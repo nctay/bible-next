@@ -1,0 +1,348 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-05T15:23:32.520314+00:00",
+  "title": "Design System: Чтение и изучение Библии",
+  "extensions": {
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "Accent",
+        "tonalRamp": [
+          "oklch(15% 0.0370 139.43)",
+          "oklch(26% 0.0370 139.43)",
+          "oklch(38% 0.0370 139.43)",
+          "oklch(49% 0.0370 139.43)",
+          "oklch(61% 0.0370 139.43)",
+          "oklch(72% 0.0370 139.43)",
+          "oklch(84% 0.0370 139.43)",
+          "oklch(95% 0.0370 139.43)"
+        ]
+      },
+      "accent-wash": {
+        "role": "primary",
+        "displayName": "Accent wash",
+        "tonalRamp": [
+          "oklch(15% 0.0178 120.69)",
+          "oklch(26% 0.0178 120.69)",
+          "oklch(38% 0.0178 120.69)",
+          "oklch(49% 0.0178 120.69)",
+          "oklch(61% 0.0178 120.69)",
+          "oklch(72% 0.0178 120.69)",
+          "oklch(84% 0.0178 120.69)",
+          "oklch(95% 0.0178 120.69)"
+        ]
+      },
+      "accent-pressed": {
+        "role": "primary",
+        "displayName": "Accent pressed",
+        "tonalRamp": [
+          "oklch(15% 0.0326 138.37)",
+          "oklch(26% 0.0326 138.37)",
+          "oklch(38% 0.0326 138.37)",
+          "oklch(49% 0.0326 138.37)",
+          "oklch(61% 0.0326 138.37)",
+          "oklch(72% 0.0326 138.37)",
+          "oklch(84% 0.0326 138.37)",
+          "oklch(95% 0.0326 138.37)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "tonalRamp": [
+          "oklch(15% 0.0086 84.57)",
+          "oklch(26% 0.0086 84.57)",
+          "oklch(38% 0.0086 84.57)",
+          "oklch(49% 0.0086 84.57)",
+          "oklch(61% 0.0086 84.57)",
+          "oklch(72% 0.0086 84.57)",
+          "oklch(84% 0.0086 84.57)",
+          "oklch(95% 0.0086 84.57)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "tonalRamp": [
+          "oklch(15% 0.0069 88.64)",
+          "oklch(26% 0.0069 88.64)",
+          "oklch(38% 0.0069 88.64)",
+          "oklch(49% 0.0069 88.64)",
+          "oklch(61% 0.0069 88.64)",
+          "oklch(72% 0.0069 88.64)",
+          "oklch(84% 0.0069 88.64)",
+          "oklch(95% 0.0069 88.64)"
+        ]
+      },
+      "frame": {
+        "role": "neutral",
+        "displayName": "Frame",
+        "tonalRamp": [
+          "oklch(15% 0.0116 84.58)",
+          "oklch(26% 0.0116 84.58)",
+          "oklch(38% 0.0116 84.58)",
+          "oklch(49% 0.0116 84.58)",
+          "oklch(61% 0.0116 84.58)",
+          "oklch(72% 0.0116 84.58)",
+          "oklch(84% 0.0116 84.58)",
+          "oklch(95% 0.0116 84.58)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "tonalRamp": [
+          "oklch(15% 0.0092 88.76)",
+          "oklch(26% 0.0092 88.76)",
+          "oklch(38% 0.0092 88.76)",
+          "oklch(49% 0.0092 88.76)",
+          "oklch(61% 0.0092 88.76)",
+          "oklch(72% 0.0092 88.76)",
+          "oklch(84% 0.0092 88.76)",
+          "oklch(95% 0.0092 88.76)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "tonalRamp": [
+          "oklch(15% 0.0177 76.96)",
+          "oklch(26% 0.0177 76.96)",
+          "oklch(38% 0.0177 76.96)",
+          "oklch(49% 0.0177 76.96)",
+          "oklch(61% 0.0177 76.96)",
+          "oklch(72% 0.0177 76.96)",
+          "oklch(84% 0.0177 76.96)",
+          "oklch(95% 0.0177 76.96)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "tonalRamp": [
+          "oklch(15% 0.0163 82.79)",
+          "oklch(26% 0.0163 82.79)",
+          "oklch(38% 0.0163 82.79)",
+          "oklch(49% 0.0163 82.79)",
+          "oklch(61% 0.0163 82.79)",
+          "oklch(72% 0.0163 82.79)",
+          "oklch(84% 0.0163 82.79)",
+          "oklch(95% 0.0163 82.79)"
+        ]
+      },
+      "control-surface": {
+        "role": "neutral",
+        "displayName": "Control surface",
+        "tonalRamp": [
+          "oklch(15% 0.0099 87.47)",
+          "oklch(26% 0.0099 87.47)",
+          "oklch(38% 0.0099 87.47)",
+          "oklch(49% 0.0099 87.47)",
+          "oklch(61% 0.0099 87.47)",
+          "oklch(72% 0.0099 87.47)",
+          "oklch(84% 0.0099 87.47)",
+          "oklch(95% 0.0099 87.47)"
+        ]
+      },
+      "phrase-underline": {
+        "role": "neutral",
+        "displayName": "Phrase underline",
+        "tonalRamp": [
+          "oklch(15% 0.0498 126.42)",
+          "oklch(26% 0.0498 126.42)",
+          "oklch(38% 0.0498 126.42)",
+          "oklch(49% 0.0498 126.42)",
+          "oklch(61% 0.0498 126.42)",
+          "oklch(72% 0.0498 126.42)",
+          "oklch(84% 0.0498 126.42)",
+          "oklch(95% 0.0498 126.42)"
+        ]
+      },
+      "error": {
+        "role": "error",
+        "displayName": "Error",
+        "tonalRamp": [
+          "oklch(15% 0.1182 31.86)",
+          "oklch(26% 0.1182 31.86)",
+          "oklch(38% 0.1182 31.86)",
+          "oklch(49% 0.1182 31.86)",
+          "oklch(61% 0.1182 31.86)",
+          "oklch(72% 0.1182 31.86)",
+          "oklch(84% 0.1182 31.86)",
+          "oklch(95% 0.1182 31.86)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "body": {
+        "displayName": "Reading",
+        "purpose": "Initial size 21px; user-adjustable from 18 to 30px."
+      },
+      "label": {
+        "displayName": "Controls",
+        "purpose": "Inter is restricted to interface text and metadata."
+      }
+    },
+    "shadows": [
+      {
+        "name": "dock",
+        "value": "0 6px 28px #302e2917, 0 1px 4px #302e2910",
+        "purpose": "Floating reading dock."
+      },
+      {
+        "name": "sheet",
+        "value": "0 -8px 40px #302e2912",
+        "purpose": "Bottom sheet above the reading page."
+      }
+    ],
+    "motion": [
+      {
+        "name": "press",
+        "value": "140ms ease",
+        "purpose": "Icon and annotated phrase feedback."
+      },
+      {
+        "name": "panel-duration",
+        "value": "280ms",
+        "purpose": "Vaul drawer and overlay duration; runtime supplies drawer behavior."
+      },
+      {
+        "name": "disclosure",
+        "value": "180ms cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "Chevron rotation."
+      },
+      {
+        "name": "loading",
+        "value": "900ms linear infinite",
+        "purpose": "Saving spinner."
+      },
+      {
+        "name": "reduced-motion",
+        "value": ".01ms",
+        "purpose": "Animation and transition duration override; one animation iteration."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "narrow-phone",
+        "value": "(max-width: 359px)"
+      },
+      {
+        "name": "short-landscape",
+        "value": "(orientation: landscape) and (max-height: 500px)"
+      }
+    ],
+    "notes": [
+      "Color ramps are synthesized OKLCH preview extensions, not additional shipped palette tokens.",
+      "Snippet text is copied from interface labels. Drawer and navigation previews are static specimens; React/Vaul supplies runtime behavior.",
+      "Descriptive names are implementation language. No approved comp or external-fidelity assertion."
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Save or retry action; disabled state represents saving or saved.",
+      "html": "<button class=\"ds-primary\">Сохранить выпуск</button>",
+      "css": ".ds-primary{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:54px;padding:14px 18px;border:0;border-radius:16px;font:400 13px/1.6 Inter,sans-serif;cursor:pointer;background:var(--accent,#53634f);color:var(--surface,#fffdf8)}.ds-primary:active{background:#3e4b3a}.ds-primary:disabled{background:var(--accent-wash,#e8ecdf);color:var(--accent,#53634f);cursor:default}.ds-primary:focus-visible{outline:2px solid var(--accent,#53634f);outline-offset:4px;border-radius:4px}"
+    },
+    {
+      "name": "Secondary button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Quiet supporting action.",
+      "html": "<button class=\"ds-secondary\">Установить приложение</button>",
+      "css": ".ds-secondary{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:54px;padding:14px 18px;border:0;border-radius:16px;font:400 13px/1.6 Inter,sans-serif;cursor:pointer;background:var(--accent-wash,#e8ecdf);color:var(--accent,#53634f)}.ds-secondary:disabled{opacity:.45;cursor:default}.ds-secondary:focus-visible{outline:2px solid var(--accent,#53634f);outline-offset:4px;border-radius:4px}"
+    },
+    {
+      "name": "Icon button",
+      "kind": "button",
+      "refersTo": "button-icon",
+      "description": "Circular control with an accessible name.",
+      "html": "<button class=\"ds-icon\" aria-label=\"Закрыть панель\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"m6 6 12 12M18 6 6 18\"/></svg></button>",
+      "css": ".ds-icon{display:inline-flex;align-items:center;justify-content:center;width:48px;min-width:48px;height:48px;border:0;border-radius:50%;background:none;color:var(--ink,#302e29);cursor:pointer;transition:background-color 140ms ease,color 140ms ease}.ds-icon:active{background:var(--accent-wash,#e8ecdf)}@media(hover:hover) and (pointer:fine){.ds-icon:hover{background:var(--accent-wash,#e8ecdf)}}.ds-icon:focus-visible{outline:2px solid var(--accent,#53634f);outline-offset:4px;border-radius:4px}@media(prefers-reduced-motion:reduce){.ds-icon{transition-duration:.01ms}}"
+    },
+    {
+      "name": "Reading dock",
+      "kind": "nav",
+      "refersTo": "reading-dock",
+      "description": "In-flow preview of the fixed reading controls.",
+      "html": "<nav class=\"ds-dock\" aria-label=\"Управление чтением\"><button class=\"ds-chapter\">Бытие 1<svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></button><span class=\"ds-divider\" aria-hidden=\"true\"></span><button class=\"ds-notes\" aria-label=\"Открыть все пояснения: 4\">4</button><button class=\"ds-text\" aria-label=\"Настройки чтения\">Aa</button></nav>",
+      "css": ".ds-dock{display:flex;align-items:center;width:min(calc(100% - 48px),346px);height:62px;padding:7px 9px;border-radius:32px;background:var(--surface,#fffdf8);box-shadow:0 6px 28px #302e2917,0 1px 4px #302e2910}.ds-dock button{display:flex;align-items:center;justify-content:center;min-height:48px;border:0;background:none;color:var(--ink,#302e29);font:400 13px Inter,sans-serif;cursor:pointer;border-radius:24px}.ds-chapter{flex:1;gap:10px;padding:0 13px}.ds-chapter svg{margin-left:auto}.ds-dock .ds-notes{min-width:67px;color:var(--accent,#53634f);font-size:12px}.ds-text{width:48px;font-size:20px!important}.ds-divider{height:22px;width:1px;background:var(--line,#ded8cd);margin:0 7px}.ds-dock button:active{background:var(--accent-wash,#e8ecdf)}@media(hover:hover) and (pointer:fine){.ds-dock button:hover{background:var(--accent-wash,#e8ecdf)}}.ds-dock button:focus-visible{outline:2px solid var(--accent,#53634f);outline-offset:4px;border-radius:4px}"
+    },
+    {
+      "name": "Annotated phrase",
+      "kind": "custom",
+      "refersTo": "phrase",
+      "description": "Selectable inline phrase with a subtle underline.",
+      "html": "<p class=\"ds-reading\"><button class=\"ds-phrase\" aria-haspopup=\"dialog\">В начале</button> сотворил Бог небо и землю.</p>",
+      "css": ".ds-reading{font:400 21px/1.85 Lora,Georgia,serif;color:var(--ink,#302e29)}.ds-phrase{display:inline;font:inherit;text-align:inherit;color:inherit;background:none;border:0;padding:5px 0;margin:-5px 0;border-radius:3px;text-decoration:underline;text-decoration-color:#8c9a79;text-decoration-thickness:1px;text-underline-offset:5px;text-decoration-skip-ink:auto;user-select:text;cursor:pointer;transition:background-color 140ms ease,text-decoration-color 140ms ease}.ds-phrase:active{background:var(--accent-wash,#e8ecdf);text-decoration-color:var(--accent,#53634f)}@media(hover:hover) and (pointer:fine){.ds-phrase:hover{background:var(--accent-wash,#e8ecdf);text-decoration-color:var(--accent,#53634f)}}.ds-phrase:focus-visible{outline:2px solid var(--accent,#53634f);outline-offset:4px;border-radius:4px}@media(prefers-reduced-motion:reduce){.ds-phrase{transition-duration:.01ms}}"
+    },
+    {
+      "name": "Note row",
+      "kind": "custom",
+      "refersTo": "note-row",
+      "description": "Border-separated entry to a prepared explanation.",
+      "html": "<button class=\"ds-note-row\"><span><small>Быт 1:2</small><strong>Дух Божий</strong></span><svg width=\"19\" height=\"19\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"m9 6 6 6-6 6\"/></svg></button>",
+      "css": ".ds-note-row{display:flex;align-items:center;justify-content:space-between;gap:15px;width:100%;min-height:80px;padding:19px 0;text-align:left;border:0;border-top:1px solid var(--line,#ded8cd);background:none;color:var(--ink,#302e29);cursor:pointer}.ds-note-row small{display:block;font:400 10px Inter,sans-serif;color:var(--muted,#70695f);margin-bottom:8px}.ds-note-row strong{font:400 19px/1.45 Lora,Georgia,serif}.ds-note-row svg{flex-shrink:0;color:var(--muted,#70695f)}.ds-note-row:active{background:var(--accent-wash,#e8ecdf)}.ds-note-row:focus-visible{outline:2px solid var(--accent,#53634f);outline-offset:4px;border-radius:4px}"
+    },
+    {
+      "name": "Disclosure",
+      "kind": "custom",
+      "refersTo": "disclosure",
+      "description": "Native expandable secondary material or source.",
+      "html": "<details class=\"ds-disclosure\"><summary>Источник<svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></summary><div class=\"ds-disclosure-body\">Внешняя страница открывается с интернетом.</div></details>",
+      "css": ".ds-disclosure{border-top:1px solid var(--line,#ded8cd);color:var(--ink,#302e29);font-family:Inter,sans-serif}.ds-disclosure summary{list-style:none;display:flex;align-items:center;justify-content:space-between;min-height:60px;gap:12px;font-size:13px;cursor:pointer}.ds-disclosure summary::-webkit-details-marker{display:none}.ds-disclosure svg{flex-shrink:0;transition:transform 180ms cubic-bezier(.23,1,.32,1)}.ds-disclosure[open] svg{transform:rotate(180deg)}.ds-disclosure-body{padding:0 0 22px;font-size:14px;line-height:1.75}.ds-disclosure summary:focus-visible{outline:2px solid var(--accent,#53634f);outline-offset:4px;border-radius:4px}@media(prefers-reduced-motion:reduce){.ds-disclosure svg{transition-duration:.01ms}}"
+    },
+    {
+      "name": "Draft badge",
+      "kind": "chip",
+      "refersTo": "draft",
+      "description": "Noninteractive editorial status.",
+      "html": "<span class=\"ds-draft\">Черновик</span>",
+      "css": ".ds-draft{display:inline-block;background:#f0ede6;color:var(--muted,#70695f);padding:4px 7px;border-radius:5px;font:400 10px/1.5 Inter,sans-serif}"
+    },
+    {
+      "name": "Bottom sheet",
+      "kind": "custom",
+      "refersTo": "sheet",
+      "description": "Visual specimen; runtime behavior uses the accessible Vaul drawer.",
+      "html": "<section class=\"ds-sheet\" aria-labelledby=\"ds-sheet-title\"><div class=\"ds-handle\" aria-hidden=\"true\"></div><h2 id=\"ds-sheet-title\">Дух Божий</h2><p>Быт 1:2 · Черновик</p></section>",
+      "css": ".ds-sheet{width:min(100%,480px);background:var(--surface,#fffdf8);color:var(--ink,#302e29);border-radius:28px 28px 0 0;box-shadow:0 -8px 40px #302e2912;padding:0 27px 25px}.ds-handle{width:36px;height:4px;background:#b6b2a7;border-radius:999px;margin:12px auto 0}.ds-sheet h2{font:400 30px/1.23 Lora,Georgia,serif;letter-spacing:-.035em;margin:40px 0 22px}.ds-sheet p{font:400 11px Inter,sans-serif;color:var(--muted,#70695f)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Modern warm book",
+    "overview": "This is descriptive implementation language, not a chosen product name. The confirmed direction is a modern book: warm light paper, dark serif reading, subtle underlined phrases and an expandable bottom sheet. A continuous reading column remains the main surface; controls stay compact and quiet.\n\nThe recorded system describes the shipped local mobile pilot. Evidence: `src/styles.css`, `src/App.tsx`, `src/main.tsx`, `public/icon.svg`, and the mobile and expanded-sheet screenshots in `.impeccable/review/`. No approved comp or external fidelity claim exists.",
+    "keyCharacteristics": [
+      "Warm tonal surfaces with a restrained sage accent.",
+      "Lora reading and headings; Inter controls and metadata.",
+      "Fine phrase underlines and border-separated supporting rows.",
+      "A floating reading dock and two-height bottom sheet."
+    ],
+    "rules": [
+      {
+        "name": "The Reading Ink Rule",
+        "body": "Annotated phrases retain the reading text's color; their underline carries the affordance, with sage wash on interaction.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Voices Rule",
+        "body": "Keep Scripture, note summaries and editorial titles in Lora; use Inter for navigation, controls, sources and metadata.",
+        "section": "typography"
+      }
+    ],
+    "dos": [
+      "**Do** preserve the warm paper and dark reading ink roles.",
+      "**Do** use Lora for reading and Inter for controls and metadata.",
+      "**Do** preserve visible focus, explicit sheet controls and reduced-motion support.",
+      "**Do** reserve bottom space and safe-area offsets for the floating controls."
+    ],
+    "donts": [
+      "**Don't** turn the mobile pilot into a wider dashboard on large screens.",
+      "**Don't** replace subtle phrase underlines with filled buttons inside Scripture.",
+      "**Don't** present draft badges or source attribution as decorative promotional elements."
+    ]
+  }
+}

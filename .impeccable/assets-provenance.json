@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "path": "public/icon-192.png",
+      "source": "public/icon.svg",
+      "origin": "Deterministic ImageMagick rasterization of the hand-authored SVG created in this implementation session; not an AI-generated raster.",
+      "command": "magick -background none public/icon.svg -resize 192x192 public/icon-192.png",
+      "dimensions": [
+        192,
+        192
+      ],
+      "sourceSha256": "e8819565b9074f6c2c042aa1471377bb45982ae5ad0334c52187a901f505887a"
+    },
+    {
+      "path": "public/icon-512.png",
+      "source": "public/icon.svg",
+      "origin": "Deterministic ImageMagick rasterization of the hand-authored SVG created in this implementation session; not an AI-generated raster.",
+      "command": "magick -background none public/icon.svg -resize 512x512 public/icon-512.png",
+      "dimensions": [
+        512,
+        512
+      ],
+      "sourceSha256": "e8819565b9074f6c2c042aa1471377bb45982ae5ad0334c52187a901f505887a"
+    },
+    {
+      "path": "public/apple-touch-icon.png",
+      "source": "public/icon.svg",
+      "origin": "Deterministic ImageMagick rasterization of the hand-authored SVG created in this implementation session; not an AI-generated raster.",
+      "command": "magick -background none public/icon.svg -resize 180x180 public/apple-touch-icon.png",
+      "dimensions": [
+        180,
+        180
+      ],
+      "sourceSha256": "e8819565b9074f6c2c042aa1471377bb45982ae5ad0334c52187a901f505887a"
+    }
+  ]
+}
