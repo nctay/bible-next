@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 const noteCount = JSON.parse(readFileSync('public/content/notes.json', 'utf8')).length;
+const scripture = JSON.parse(readFileSync('public/content/genesis.json', 'utf8'));
 
 async function openReader(page) {
   await page.goto('/');
@@ -9,8 +10,8 @@ async function openReader(page) {
 
 test('phrase and verse annotations preserve reading place and keyboard focus', async ({ page }) => {
   await openReader(page);
-  await expect(page.locator('#verse-1-2 .phrase')).toHaveCount(2);
-  await expect(page.locator('#verse-1-26 .phrase')).toHaveCount(2);
+  await expect(page.locator('#verse-1-2 .phrase')).toHaveCount(3);
+  await expect(page.locator('#verse-1-26 .phrase')).toHaveCount(3);
   await expect(page.getByRole('button', { name: `Открыть все пояснения: ${noteCount}` })).toBeVisible();
   const phrase = page.getByRole('button', { name: 'Дух Божий — открыть пояснение' });
   await phrase.scrollIntoViewIfNeeded();
@@ -28,10 +29,26 @@ test('phrase and verse annotations preserve reading place and keyboard focus', a
   await expect(dialog).not.toBeVisible();
   await expect(phrase).toBeFocused();
   expect(Math.abs((await page.evaluate(() => scrollY)) - before)).toBeLessThan(3);
-  await page.getByRole('button', { name: 'Бытие 1:2 — пояснений: 2', exact: true }).click();
-  await expect(page.locator('.note-row')).toHaveCount(2);
+  await page.getByRole('button', { name: 'Бытие 1:2 — пояснений: 3', exact: true }).click();
+  await expect(page.locator('.note-row')).toHaveCount(3);
   await page.getByRole('button', { name: /Что значит неустроенная земля/ }).click();
   await expect(page.getByRole('heading', { name: 'Что значит неустроенная земля' })).toBeVisible();
+});
+
+test('all 24 explanations are available and shared phrase anchors do not duplicate Scripture', async ({ page }) => {
+  await openReader(page);
+  await expect(page.locator('.verse p')).toHaveText(scripture.chapters.flatMap(c => c.verses.map(v => v.text)));
+  await page.getByRole('button', { name: `Открыть все пояснения: ${noteCount}`, exact: true }).click();
+  await expect(page.locator('.note-row')).toHaveCount(24);
+  await page.getByRole('button', { name: /Почему Elohim/ }).click();
+  await expect(page.getByRole('heading', { name: 'Почему Elohim имеет форму множественного числа' })).toBeVisible();
+  await page.getByText('Источники', { exact: true }).click();
+  await expect(page.getByRole('link', { name: /A Handbook on Genesis/ })).toHaveAttribute('href', 'https://tips.translation.bible/story/translation-commentary-on-genesis-11/');
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', { name: 'день один — открыть пояснения: 2', exact: true }).click();
+  await expect(page.locator('.note-row')).toHaveCount(2);
+  await expect(page.getByRole('button', { name: /Что такое день творения/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Почему день один, а не первый/ })).toBeVisible();
 });
 
 test('chapter navigation, new annotations and type size remain usable on narrow and landscape phones', async ({ page }) => {

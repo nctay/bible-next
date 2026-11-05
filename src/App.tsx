@@ -4,7 +4,7 @@ import { BookOpen, CaretDown, CaretRight, Check, DownloadSimple, ArrowUpRight, A
 import { type Note, type Scripture, type Source, validateContent, noteReference, inlineSources } from './content';
 import { offlineRequest, prepareOffline, watchUpdates } from './offline';
 
-type Panel = { type: 'note'; id: string } | { type: 'verse'; chapter: number; verse: number } | { type: 'notes' | 'contents' | 'settings' | 'release' };
+type Panel = { type: 'note'; id: string } | { type: 'verse'; chapter: number; verse: number } | { type: 'phrase'; chapter: number; verse: number; phrase: string } | { type: 'notes' | 'contents' | 'settings' | 'release' };
 
 function SourceLink({ source }: { source: Source }) {
   return <a className="source-link" href={source.url} target="_blank" rel="noopener noreferrer">
@@ -132,14 +132,16 @@ export function App() {
 
   function annotatedText(text: string, verse: number, chapterNumber: number): ReactNode[] {
     const anchors = notes.filter(n => n.chapter === chapterNumber && n.anchorVerse === verse)
+      .filter((note, index, all) => all.findIndex(other => other.phrase === note.phrase) === index)
       .map(n => ({ note: n, index: text.indexOf(n.phrase) })).sort((a, b) => a.index - b.index);
     const result: ReactNode[] = []; let position = 0;
     for (const { note, index } of anchors) {
+      const related = notes.filter(n => n.chapter === chapterNumber && n.anchorVerse === verse && n.phrase === note.phrase);
       result.push(text.slice(position, index));
       result.push(<button key={note.id} className={`phrase ${open && panel.type === 'note' && panel.id === note.id ? 'phrase-active' : ''}`}
-        aria-label={`${note.phrase} — открыть пояснение`} aria-haspopup="dialog" onClick={() => {
+        aria-label={`${note.phrase} — ${related.length > 1 ? `открыть пояснения: ${related.length}` : 'открыть пояснение'}`} aria-haspopup="dialog" onClick={() => {
           if (window.getSelection()?.toString()) return;
-          showPanel({ type: 'note', id: note.id });
+          showPanel(related.length > 1 ? { type: 'phrase', chapter: chapterNumber, verse, phrase: note.phrase } : { type: 'note', id: note.id });
         }}>{note.phrase}</button>);
       position = index + note.phrase.length;
     }
@@ -147,10 +149,10 @@ export function App() {
   }
 
   const selectedNote = panel.type === 'note' ? notes.find(n => n.id === panel.id) : undefined;
-  const verseNotes = panel.type === 'verse' ? notes.filter(n => n.chapter === panel.chapter && n.verses.includes(panel.verse)) : notes;
-  const selectedVerse = panel.type === 'verse' ? content?.scripture.chapters.find(c => c.number === panel.chapter)?.verses.find(v => v.number === panel.verse) : undefined;
+  const verseNotes = panel.type === 'verse' ? notes.filter(n => n.chapter === panel.chapter && n.verses.includes(panel.verse)) : panel.type === 'phrase' ? notes.filter(n => n.chapter === panel.chapter && n.anchorVerse === panel.verse && n.phrase === panel.phrase) : notes;
+  const selectedVerse = panel.type === 'verse' || panel.type === 'phrase' ? content?.scripture.chapters.find(c => c.number === panel.chapter)?.verses.find(v => v.number === panel.verse) : undefined;
   const titles: Record<string, string> = { contents: 'Содержание', notes: 'Пояснения к чтению', settings: 'Как вам удобно', release: 'Чтение без интернета' };
-  const title = selectedNote?.title ?? (panel.type === 'verse' ? `Бытие ${panel.chapter}:${panel.verse}` : titles[panel.type]);
+  const title = selectedNote?.title ?? (panel.type === 'phrase' ? panel.phrase : panel.type === 'verse' ? `Бытие ${panel.chapter}:${panel.verse}` : titles[panel.type]);
 
   function noteList(items: Note[]) {
     return <div className="note-list">{items.map(n => <button key={n.id} className="note-row" onClick={() => showNote(n.id)}>
@@ -221,7 +223,7 @@ export function App() {
           <Drawer.Title className="sheet-title">{title}</Drawer.Title>
           <Drawer.Description className="sr-only">{selectedNote ? 'Подготовленное пояснение к фразе. Черновик редакционного пересказа.' : 'Материалы и настройки текущего фрагмента.'}</Drawer.Description>
           {selectedNote && <NoteBody note={selectedNote} />}
-          {panel.type === 'verse' && <><blockquote className="verse-quote">{selectedVerse?.text}</blockquote>{verseNotes.length ? noteList(verseNotes) : <p className="empty-note">К этому стиху пояснение ещё не подготовлено.</p>}</>}
+          {(panel.type === 'verse' || panel.type === 'phrase') && <><blockquote className="verse-quote">{selectedVerse?.text}</blockquote>{verseNotes.length ? noteList(verseNotes) : <p className="empty-note">К этому стиху пояснение ещё не подготовлено.</p>}</>}
           {panel.type === 'notes' && <><p className="sheet-intro">Пояснений: {notes.length}. Краткие ответы, авторские аргументы и сопоставления. Все материалы пока в черновике.</p>{noteList(notes)}</>}
           {panel.type === 'contents' && <><p className="sheet-intro">Сейчас доступен один фрагмент:<br />Бытие 1:1–2:3.</p><div className="contents-list">
             <button className="chapter-row" onClick={() => jump('verse-1-1')}><span className="chapter-tile">1</span><span><strong>Глава 1</strong><small>Стихи 1–31 · пояснений: {notes.filter(n => n.chapter === 1).length}</small></span><CaretRight size={19} aria-hidden="true" /></button>
