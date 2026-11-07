@@ -62,6 +62,9 @@ export function App() {
   const focusTarget = useRef<HTMLElement | null>(null);
   const pendingJump = useRef<string | null>(null);
   const scrollArea = useRef<HTMLDivElement>(null);
+  const readingDock = useRef<HTMLElement>(null);
+  const dockScrollOrigin = useRef(0);
+  const dockScrollPaused = useRef(false);
   const currentFontSize = useRef(fontSize);
   currentFontSize.current = fontSize;
   const resume = useRef<{ id: string; offset: number; fontSize: number } | null>(null);
@@ -134,6 +137,31 @@ export function App() {
     return () => observer.disconnect();
   }, [content]);
 
+  useEffect(() => {
+    const dock = readingDock.current;
+    const scroller = document.scrollingElement;
+    if (!content || !dock || !scroller) return;
+
+    const resetOrigin = () => { dockScrollOrigin.current = window.scrollY; };
+    resetOrigin();
+    const followReading = () => {
+      if (dockScrollPaused.current) return;
+      const y = Math.max(0, Math.min(window.scrollY, scroller.scrollHeight - scroller.clientHeight));
+      const hidden = dock.hasAttribute('data-hidden');
+      // Measure from the last turning point so small scroll events can add up.
+      const origin = hidden ? Math.max(dockScrollOrigin.current, y) : Math.min(dockScrollOrigin.current, y);
+      const next = y > 16 && (hidden ? origin - y < 12 : y - origin >= 32);
+      dockScrollOrigin.current = next === hidden ? origin : y;
+      if (next !== hidden) dock.toggleAttribute('data-hidden', next);
+    };
+    window.addEventListener('scroll', followReading, { passive: true });
+    window.addEventListener('resize', resetOrigin);
+    return () => {
+      window.removeEventListener('scroll', followReading);
+      window.removeEventListener('resize', resetOrigin);
+    };
+  }, [content]);
+
   const { notesByVerse, notesByChapter } = useMemo(() => {
     const notesByVerse = new Map<string, Note[]>();
     const notesByChapter = new Map<number, Note[]>();
@@ -156,6 +184,7 @@ export function App() {
   const verseCount = content?.scripture.chapters.reduce((total, c) => total + c.verses.length, 0);
   function showPanel(next: Panel) {
     focusTarget.current = document.activeElement as HTMLElement;
+    dockScrollPaused.current = true;
     setPanel(next); setSnap(0.68); setOpen(true); setSaveError('');
     scrollArea.current?.scrollTo(0, 0);
   }
@@ -235,7 +264,7 @@ export function App() {
         catch { setUpdating(false); }
       }}>{updating ? 'Обновляем…' : 'Обновить'}</button>
     </aside>}
-    <nav className="reading-dock" aria-label="Управление чтением">
+    <nav ref={readingDock} className="reading-dock" aria-label="Управление чтением">
       <button className="chapter-control" onClick={() => showPanel({ type: 'contents' })}><BookOpen size={21} weight="light" aria-hidden="true" /><span>Бытие {chapter}</span><CaretDown size={13} aria-hidden="true" /></button>
       <span className="dock-divider" aria-hidden="true" />
       <button className="notes-control" aria-label={`Пояснения к главе ${chapter}: ${chapterNotes.length}`} onClick={() => showPanel({ type: 'notes' })}><ChatTeardropText size={22} weight="light" aria-hidden="true" /><span>{chapterNotes.length}</span></button>
@@ -246,14 +275,18 @@ export function App() {
       <Drawer.Portal><Drawer.Overlay className="sheet-overlay" /><Drawer.Content className="sheet" style={{ '--visible-height': `${Number(snap) * 100}dvh` } as CSSProperties}
         onCloseAutoFocus={event => {
           event.preventDefault();
-          if (pendingJump.current) {
-            const target = document.getElementById(pendingJump.current);
-            pendingJump.current = null;
-            requestAnimationFrame(() => {
-              target?.scrollIntoView({ block: 'start' });
-              (target?.querySelector<HTMLElement>('button') ?? target)?.focus({ preventScroll: true });
-            });
-          } else focusTarget.current?.focus({ preventScroll: true });
+          const target = pendingJump.current ? document.getElementById(pendingJump.current) : null;
+          pendingJump.current = null;
+          if (!target) focusTarget.current?.focus({ preventScroll: true });
+          requestAnimationFrame(() => {
+            if (target) {
+              target.scrollIntoView({ block: 'start' });
+              readingDock.current?.removeAttribute('data-hidden');
+              (target.querySelector<HTMLElement>('button') ?? target).focus({ preventScroll: true });
+            }
+            dockScrollOrigin.current = window.scrollY;
+            dockScrollPaused.current = false;
+          });
         }}>
         <Drawer.Handle aria-label="Потяните, чтобы развернуть пояснение" className="sheet-handle" />
         <div className="sheet-toolbar"><span>{selectedNote ? noteReference(selectedNote) : 'Книга Бытие'}</span><div>

@@ -62,6 +62,8 @@ test('chapter navigation, new annotations and type size remain usable on narrow 
   await page.getByRole('button', { name: `Бытие 2:1 — пояснений: ${verseNoteCount(2, 1)}`, exact: true }).click();
   await expect(page.getByRole('button', { name: /Почему Бог почил/ })).toBeVisible();
   await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).not.toBeVisible();
+  await page.evaluate(() => window.scrollBy(0, -24));
   await page.getByRole('button', { name: 'Настройки чтения' }).click();
   for (let n = 0; n < 9; n++) await page.getByRole('button', { name: 'Увеличить текст' }).click();
   await expect(page.locator('output')).toHaveText('30 px');
@@ -73,6 +75,33 @@ test('chapter navigation, new annotations and type size remain usable on narrow 
     await expect(page.getByRole('button', { name: 'Закрыть панель' })).toBeInViewport();
     await page.keyboard.press('Escape');
   }
+});
+
+test('reading controls clear the text and return on a short reverse scroll or keyboard focus', async ({ page }) => {
+  await openReader(page);
+  const dock = page.getByRole('navigation', { name: 'Управление чтением' });
+  await expect(page.locator('.topbar')).toHaveCSS('height', '69px');
+  await expect(dock).toBeInViewport();
+
+  await page.evaluate(() => window.scrollTo(0, 600));
+  await expect(dock).not.toBeInViewport();
+  await page.evaluate(() => window.scrollBy(0, -6));
+  await expect(dock).not.toBeInViewport();
+  await page.evaluate(() => window.scrollBy(0, -8));
+  await expect(dock).toBeInViewport();
+
+  await page.evaluate(() => window.scrollBy(0, 100));
+  await expect(dock).not.toBeInViewport();
+  await page.getByRole('button', { name: 'Вернуться к пояснениям' }).evaluate(button => button.focus({ preventScroll: true }));
+  await page.keyboard.press('Tab');
+  await expect(dock.locator('.chapter-control')).toBeFocused();
+  await expect(dock).toBeInViewport();
+
+  await dock.locator('.chapter-control').evaluate(button => button.blur());
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(dock).toHaveCSS('opacity', '0');
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(dock).toHaveCSS('opacity', '1');
 });
 
 test('saved release survives offline reload including explanations, attribution, fonts and source links', async ({ page, context }) => {
