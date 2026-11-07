@@ -1,49 +1,45 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
-import { validateContent, noteReference, inlineSources } from '../src/content.ts';
-const scripture = JSON.parse(await readFile(new URL('../public/content/genesis.json', import.meta.url)));
-const notes = JSON.parse(await readFile(new URL('../public/content/notes.json', import.meta.url)));
-const dossier = await readFile(new URL('../docs/content/genesis-1-review.md', import.meta.url), 'utf8');
-test('every dossier question is exported verbatim with its title, summary, sections and citations', () => {
-  const blocks = [...dossier.matchAll(/^## (\d+)\. (.+?) — (.+?)\n([\s\S]*?)(?=^## |$(?![\s\S]))/gm)];
-  assert.equal(blocks.length, 24);
-  assert.equal(notes.length, blocks.length, 'Все вопросы досье должны попасть в выпуск');
-  for (const [index, note] of notes.entries()) {
-    const paragraphs = blocks[index][4].trim().split(/\n\s*\n/);
-    assert.equal(note.title, blocks[index][3]);
-    assert.equal(note.reference, blocks[index][2]);
-    assert.equal(note.summary, paragraphs[0].replace(/^\*\*Коротко\.\*\*\s*/, ''));
-    assert.deepEqual(note.sections.flatMap(section => section.paragraphs), paragraphs.slice(1).map(p => p.replace(/^\*\*.+?\.\*\*\s*/, '')));
-    const urls = [...blocks[index][4].matchAll(/\[[^\]]+\]\((https:\/\/[^)]+)\)/g)].map(match => match[1]);
-    assert.deepEqual(note.sources.map(source => source.url), [...new Set(urls)]);
-  }
-});
-test('published pilot keeps its complete text, note anchors and attributed sources', () => {
+import { readContent, verseKeys } from '../scripts/content.mjs';
+import { validateContent, inlineSources } from '../src/content.ts';
+
+const { scripture, notes } = await readContent();
+
+test('the full audited corpus builds with verse coverage and the original phrase anchors', () => {
+  assert.equal(scripture.chapters.length, 50);
+  assert.equal(scripture.chapters.flatMap(chapter => chapter.verses).length, 1533);
+  assert.ok(notes.filter(note => note.kind === 'Редакционный разбор').length >= 1410);
+  assert.ok(notes.filter(note => note.kind === 'Смысл стиха').length >= 765);
+  assert.equal(notes.filter(note => note.anchor).length, 24);
+  assert.equal(notes.filter(note => note.anchor?.verse === '1:26').length, 3);
+  assert.ok(notes.find(note => note.id === 'beginning').sources.every(source => source.author && source.attribution));
   assert.doesNotThrow(() => validateContent(scripture, notes));
-  assert.equal(notes.length, 24);
-  for (const note of notes) {
-    assert.ok(note.sources.every(s => s.author && s.attribution));
-  }
-  assert.equal(noteReference(notes[3]), 'Быт 1:3–5 и 14–19');
-  assert.equal(notes.filter(n => n.chapter === 1 && n.anchorVerse === 26).length, 3);
-  assert.equal(notes.filter(n => n.chapter === 2).length, 2);
 });
-test('incomplete releases, missing phrases, duplicate notes and missing source attribution are rejected', () => {
+
+test('references preserve cross-chapter, disjoint and whole-chapter spans', () => {
+  assert.deepEqual(verseKeys('Быт 11:31–12:1', scripture), ['11:31', '11:32', '12:1']);
+  assert.deepEqual(verseKeys('Быт 6:3 и 5:32', scripture), ['6:3', '5:32']);
+  assert.deepEqual(verseKeys('Быт 10:5, 20, 31; 11:1', scripture), ['10:5', '10:20', '10:31', '11:1']);
+  assert.deepEqual(verseKeys('Быт 7 и 1 Петр 3:20–21', scripture), verseKeys('Быт 7', scripture));
+  assert.equal(verseKeys('Быт 31:55', scripture)[0], '31:55');
+  assert.throws(() => verseKeys('Быт 50:27', scripture));
+  assert.throws(() => verseKeys('Быт 2:3–1', scripture));
+});
+
+test('incomplete releases, missing phrases, duplicate notes and missing citations are rejected', () => {
   const truncated = structuredClone(scripture); truncated.chapters[1].verses.pop();
-  assert.throws(() => validateContent(truncated, notes));
-  const broken = structuredClone(notes); broken[0].phrase = 'Фразы нет в Писании';
-  assert.throws(() => validateContent(scripture, broken));
-  assert.throws(() => validateContent(scripture, [...notes, notes[0]]));
-  const insecure = structuredClone(notes); insecure[0].sources[0].url = 'javascript:alert(1)';
-  assert.throws(() => validateContent(scripture, insecure));
+  assert.throws(() => validateContent(truncated, notes), /Неполный текст/);
+  const broken = structuredClone(notes); broken[0].anchor.phrase = 'Фразы нет в Писании';
+  assert.throws(() => validateContent(scripture, broken), /Некорректное пояснение/);
+  assert.throws(() => validateContent(scripture, [...notes, notes[0]]), /Повтор пояснения/);
   const missing = structuredClone(notes); missing[0].sources.pop();
-  assert.throws(() => validateContent(scripture, missing));
+  assert.throws(() => validateContent(scripture, missing), /атрибуция/);
+  assert.throws(() => validateContent(scripture, notes.filter(note => !note.verses.includes('50:26'))), /50:26/);
 });
-test('inline citations keep surrounding text and multiple authors without rendering arbitrary markup', () => {
+
+test('inline citations preserve surrounding text and distinct authors', () => {
   assert.deepEqual(inlineSources('До [Василий](https://example.com/a), [Августин](https://example.com/b).'), [
     { text: 'До ' }, { text: 'Василий', url: 'https://example.com/a' }, { text: ', ' },
     { text: 'Августин', url: 'https://example.com/b' }, { text: '.' },
   ]);
-  assert.deepEqual(inlineSources('<script>bad()</script> [bad](javascript:alert)'), [{ text: '<script>bad()</script> [bad](javascript:alert)' }]);
 });

@@ -5,8 +5,8 @@ export interface Scripture {
   chapters: { number: number; verses: Verse[] }[];
 }
 export interface Note {
-  id: string; chapter: number; verses: number[]; phrase: string; anchorVerse: number;
-  reference: string; title: string; kind: string; status: 'draft'; summary: string;
+  id: string; verses: string[]; anchor?: { verse: string; phrase: string };
+  reference: string; title: string; kind: 'Редакционный разбор' | 'Смысл стиха' | 'Контекст эпизода'; summary: string;
   sections: { title: string; paragraphs: string[] }[];
   sources: Source[];
 }
@@ -22,29 +22,41 @@ export function inlineSources(text: string) {
   parts.push({ text: text.slice(position) });
   return parts;
 }
+const chapterLengths = [
+  31, 25, 24, 26, 32, 22, 24, 22, 29, 32, 32, 20, 18, 24, 21, 16, 27, 33, 38, 18, 34, 24, 20, 67, 34,
+  35, 46, 22, 35, 43, 55, 32, 20, 31, 29, 43, 36, 30, 23, 23, 57, 38, 34, 34, 28, 34, 31, 22, 33, 26,
+];
+
 export function validateContent(scripture: Scripture, notes: Note[]) {
   if (!Array.isArray(scripture?.chapters) || !Array.isArray(notes)) throw new Error('Некорректный выпуск');
-  const verses = scripture.chapters.flatMap(c => c.verses.map(v => ({ ...v, chapter: c.number })));
-  if (verses.length !== 34 || verses.some(v => !v.text || !Number.isInteger(v.number)) ||
-      scripture.chapters.length !== 2 || scripture.chapters.some((c, i) => c.number !== i + 1 ||
-      c.verses.length !== (i === 0 ? 31 : 3) || c.verses.some((v, j) => v.number !== j + 1))) {
+  if (scripture.chapters.length !== chapterLengths.length || scripture.chapters.some((c, i) =>
+    c.number !== i + 1 || c.verses.length !== chapterLengths[i] ||
+    c.verses.some((v, j) => v.number !== j + 1 || typeof v.text !== 'string' || !v.text.trim()))) {
     throw new Error('Неполный текст выпуска');
   }
+  const verses = new Map<string, string>(scripture.chapters.flatMap(c => c.verses.map(v => [`${c.number}:${v.number}`, v.text] as const)));
   if (new Set(notes.map(n => n.id)).size !== notes.length) throw new Error('Повтор пояснения');
+  const meaning = new Set<string>();
   for (const note of notes) {
-    const anchor = verses.find(v => v.chapter === note.chapter && v.number === note.anchorVerse);
-    if (!note.id || !note.reference || !note.title || !note.summary || note.kind !== 'Редакционный разбор' || note.status !== 'draft' ||
-        !note.sections?.length || note.sections.some(s => !s.title || !s.paragraphs?.length || s.paragraphs.some(p => !p)) || !note.sources?.length ||
-        !note.phrase || !anchor?.text.includes(note.phrase) || !note.verses.includes(note.anchorVerse) ||
-        note.verses.some(n => !verses.some(v => v.chapter === note.chapter && v.number === n))) {
-      throw new Error('Не найдена привязка пояснения');
+    if (!note.id || !note.reference || !note.title || !note.summary ||
+        !['Редакционный разбор', 'Смысл стиха', 'Контекст эпизода'].includes(note.kind) ||
+        !note.verses?.length || note.verses.some(key => !verses.has(key)) ||
+        !note.sources?.length || (note.anchor && (!note.anchor.phrase || !note.verses.includes(note.anchor.verse) ||
+        !verses.get(note.anchor.verse)?.includes(note.anchor.phrase)))) {
+      throw new Error(`Некорректное пояснение: ${note.id}`);
     }
-    for (const section of note.sections) for (const paragraph of section.paragraphs) {
+    if (note.sections.some(s => !s.title || !s.paragraphs?.length || s.paragraphs.some(p => !p))) {
+      throw new Error(`Некорректный раздел: ${note.id}`);
+    }
+    for (const paragraph of [note.summary, ...note.sections.flatMap(s => s.paragraphs)]) {
       if (inlineSources(paragraph).some(part => part.url && !note.sources.some(s => s.url === part.url))) {
-        throw new Error('Не найдена атрибуция источника');
+        throw new Error(`Не найдена атрибуция источника: ${note.id}`);
       }
     }
+    if (note.kind !== 'Редакционный разбор') for (const key of note.verses) meaning.add(key);
   }
+  const uncovered = [...verses.keys()].filter(key => !meaning.has(key));
+  if (uncovered.length) throw new Error(`Стихи без смыслового пояснения: ${uncovered.join(', ')}`);
   const sources = [...scripture.sources, ...notes.flatMap(n => n.sources)];
   if (sources.some(s => !s.title || new URL(s.url).protocol !== 'https:')) throw new Error('Некорректный источник');
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { Drawer } from 'vaul';
 import { BookOpen, CaretDown, CaretRight, Check, DownloadSimple, ArrowUpRight, ArrowsOutSimple, ArrowsInSimple, TextAa, X, ChatTeardropText, Minus, Plus, WifiSlash, CircleNotch } from '@phosphor-icons/react';
 import { type Note, type Scripture, type Source, validateContent, noteReference, inlineSources } from './content';
@@ -12,14 +12,33 @@ function SourceLink({ source }: { source: Source }) {
   </a>;
 }
 
+function noteText(text: string) {
+  return inlineSources(text).map((part, index) => part.url ?
+    <a key={index} href={part.url} target="_blank" rel="noopener noreferrer">{part.text}</a> :
+    part.text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).map((word, i) => {
+      const key = `${index}-${i}`;
+      if (word.startsWith('**') && word.endsWith('**') && word.length > 4) return <strong key={key}>{word.slice(2, -2)}</strong>;
+      if (word.startsWith('*') && word.endsWith('*') && word.length > 2) return <em key={key}>{word.slice(1, -1)}</em>;
+      return word;
+    }));
+}
+
+function NoteParagraph({ text }: { text: string }) {
+  if (text.startsWith('| ')) {
+    const [header, , ...rows] = text.split('\n').map(line => line.trim().slice(1, -1).split('|').map(cell => cell.trim()));
+    return <div className="note-table"><table><thead><tr>{header.map((cell, i) => <th scope="col" key={i}>{noteText(cell)}</th>)}</tr></thead>
+      <tbody>{rows.map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j}>{noteText(cell)}</td>)}</tr>)}</tbody></table></div>;
+  }
+  return <p>{noteText(text.replace(/^### /, ''))}</p>;
+}
+
 function NoteBody({ note }: { note: Note }) {
   return <>
-    <div className="note-meta"><span>{note.kind}</span><span className="draft">Черновик</span></div>
-    <p className="note-summary">{note.summary}</p>
-    <p className="editorial-label">Редакционный разбор нескольких источников</p>
-    {note.sections.map(section => <details className="disclosure" key={section.title}>
+    <div className="note-meta"><span>{note.kind}</span></div>
+    <p className="note-summary">{noteText(note.summary)}</p>
+    {note.sections.map((section, i) => <details className="disclosure" key={i}>
       <summary>{section.title}<CaretDown size={18} aria-hidden="true" /></summary>
-      <div className="disclosure-body">{section.paragraphs.map((paragraph, index) => <p key={index}>{inlineSources(paragraph).map((part, i) => part.url ? <a key={i} href={part.url} target="_blank" rel="noopener noreferrer">{part.text}</a> : part.text)}</p>)}</div>
+      <div className="disclosure-body">{section.paragraphs.map((paragraph, index) => <NoteParagraph key={index} text={paragraph} />)}</div>
     </details>)}
     <details className="disclosure"><summary>Источники<CaretDown size={18} aria-hidden="true" /></summary><div className="disclosure-body">{note.sources.map(source => <SourceLink key={source.url} source={source} />)}<p className="secondary">Внешние страницы открываются с интернетом.</p></div></details>
   </>;
@@ -115,7 +134,26 @@ export function App() {
     return () => observer.disconnect();
   }, [content]);
 
+  const { notesByVerse, notesByChapter } = useMemo(() => {
+    const notesByVerse = new Map<string, Note[]>();
+    const notesByChapter = new Map<number, Note[]>();
+    for (const note of content?.notes ?? []) {
+      const chapters = new Set<number>();
+      for (const key of note.verses) {
+        if (!notesByVerse.has(key)) notesByVerse.set(key, []);
+        notesByVerse.get(key)!.push(note);
+        chapters.add(Number(key.split(':')[0]));
+      }
+      for (const number of chapters) {
+        if (!notesByChapter.has(number)) notesByChapter.set(number, []);
+        notesByChapter.get(number)!.push(note);
+      }
+    }
+    return { notesByVerse, notesByChapter };
+  }, [content]);
   const notes = content?.notes ?? [];
+  const chapterNotes = notesByChapter.get(chapter) ?? [];
+  const verseCount = content?.scripture.chapters.reduce((total, c) => total + c.verses.length, 0);
   function showPanel(next: Panel) {
     focusTarget.current = document.activeElement as HTMLElement;
     setPanel(next); setSnap(0.68); setOpen(true); setSaveError('');
@@ -131,32 +169,35 @@ export function App() {
   }
 
   function annotatedText(text: string, verse: number, chapterNumber: number): ReactNode[] {
-    const anchors = notes.filter(n => n.chapter === chapterNumber && n.anchorVerse === verse)
-      .filter((note, index, all) => all.findIndex(other => other.phrase === note.phrase) === index)
-      .map(n => ({ note: n, index: text.indexOf(n.phrase) })).sort((a, b) => a.index - b.index);
+    const key = `${chapterNumber}:${verse}`;
+    const relatedNotes = (notesByVerse.get(key) ?? []).filter(note => note.anchor?.verse === key);
+    const anchors = [...new Map(relatedNotes.map(note => [note.anchor!.phrase, note])).entries()]
+      .map(([phrase, note]) => ({ phrase, note, index: text.indexOf(phrase) })).sort((a, b) => a.index - b.index);
     const result: ReactNode[] = []; let position = 0;
-    for (const { note, index } of anchors) {
-      const related = notes.filter(n => n.chapter === chapterNumber && n.anchorVerse === verse && n.phrase === note.phrase);
+    for (const { note, phrase, index } of anchors) {
+      const related = relatedNotes.filter(n => n.anchor?.phrase === phrase);
       result.push(text.slice(position, index));
       result.push(<button key={note.id} className={`phrase ${open && panel.type === 'note' && panel.id === note.id ? 'phrase-active' : ''}`}
-        aria-label={`${note.phrase} — ${related.length > 1 ? `открыть пояснения: ${related.length}` : 'открыть пояснение'}`} aria-haspopup="dialog" onClick={() => {
+        aria-label={`${phrase} — ${related.length > 1 ? `открыть пояснения: ${related.length}` : 'открыть пояснение'}`} aria-haspopup="dialog" onClick={() => {
           if (window.getSelection()?.toString()) return;
-          showPanel(related.length > 1 ? { type: 'phrase', chapter: chapterNumber, verse, phrase: note.phrase } : { type: 'note', id: note.id });
-        }}>{note.phrase}</button>);
-      position = index + note.phrase.length;
+          showPanel(related.length > 1 ? { type: 'phrase', chapter: chapterNumber, verse, phrase } : { type: 'note', id: note.id });
+        }}>{phrase}</button>);
+      position = index + phrase.length;
     }
     result.push(text.slice(position)); return result;
   }
 
   const selectedNote = panel.type === 'note' ? notes.find(n => n.id === panel.id) : undefined;
-  const verseNotes = panel.type === 'verse' ? notes.filter(n => n.chapter === panel.chapter && n.verses.includes(panel.verse)) : panel.type === 'phrase' ? notes.filter(n => n.chapter === panel.chapter && n.anchorVerse === panel.verse && n.phrase === panel.phrase) : notes;
+  const verseKey = panel.type === 'verse' || panel.type === 'phrase' ? `${panel.chapter}:${panel.verse}` : '';
+  const verseNotes = (notesByVerse.get(verseKey) ?? []).filter(note =>
+    panel.type !== 'phrase' || (note.anchor?.verse === verseKey && note.anchor.phrase === panel.phrase));
   const selectedVerse = panel.type === 'verse' || panel.type === 'phrase' ? content?.scripture.chapters.find(c => c.number === panel.chapter)?.verses.find(v => v.number === panel.verse) : undefined;
   const titles: Record<string, string> = { contents: 'Содержание', notes: 'Пояснения к чтению', settings: 'Как вам удобно', release: 'Чтение без интернета' };
   const title = selectedNote?.title ?? (panel.type === 'phrase' ? panel.phrase : panel.type === 'verse' ? `Бытие ${panel.chapter}:${panel.verse}` : titles[panel.type]);
 
   function noteList(items: Note[]) {
     return <div className="note-list">{items.map(n => <button key={n.id} className="note-row" onClick={() => showNote(n.id)}>
-      <span><small>{noteReference(n)}</small><strong>{n.title}</strong></span><CaretRight size={19} aria-hidden="true" />
+      <span><small>{noteReference(n)} · {n.kind}</small><strong>{n.title}</strong></span><CaretRight size={19} aria-hidden="true" />
     </button>)}</div>;
   }
 
@@ -171,21 +212,21 @@ export function App() {
     </header>
     {!online && <div className="connection-status" role="status"><WifiSlash size={16} aria-hidden="true" />{saved ? 'Без интернета · выпуск на устройстве' : 'Нет соединения с интернетом'}</div>}
     <main id="reading" className="reading" style={{ '--reading-size': `${fontSize}px` } as CSSProperties}>
-      <div className="chapter-opening"><h1>Сотворение<br />мира</h1><p>Бытие 1:1–2:3</p><div className="opening-rule" aria-hidden="true" /></div>
-      <p className="reading-hint">У каждой фразы с <span>подчёркиванием</span><br />есть своё пояснение.</p>
+      <div className="chapter-opening"><h1>Бытие</h1><p>Синодальный перевод</p><div className="opening-rule" aria-hidden="true" /></div>
+      <p className="reading-hint">Нажмите номер стиха или <span>подчёркнутую фразу</span>, чтобы открыть пояснения.</p>
       {!content && !loadError && <p role="status" className="loading">Открываем текст…</p>}
       {loadError && <div role="alert" className="load-error"><h2>Не удалось открыть текст</h2><p>Проверьте соединение. Если выпуск ещё не сохранён, для первого открытия нужен интернет.</p><button className="primary-button" onClick={() => setAttempt(attempt + 1)}>Попробовать ещё раз</button></div>}
-      {content?.scripture.chapters.map(c => <section key={c.number} aria-label={`Глава ${c.number}`}>
-        {c.number === 2 && <h2 className="chapter-heading" id="chapter-2" data-chapter={2} tabIndex={-1}>Глава 2</h2>}
+      {content?.scripture.chapters.map(c => <section key={c.number} data-chapter={c.number} aria-labelledby={`chapter-${c.number}`}>
+        <h2 className="chapter-heading" id={`chapter-${c.number}`} tabIndex={-1}>Глава {c.number}</h2>
         {c.verses.map(v => {
-          const count = notes.filter(n => n.chapter === c.number && n.verses.includes(v.number)).length;
-          return <div className={`verse ${v.number === 1 ? 'first-verse' : ''}`} id={`verse-${c.number}-${v.number}`} data-chapter={c.number} key={v.number}>
+          const count = notesByVerse.get(`${c.number}:${v.number}`)?.length ?? 0;
+          return <div className={`verse ${v.number === 1 ? 'first-verse' : ''}`} id={`verse-${c.number}-${v.number}`} key={v.number}>
             <button className={`verse-number ${count ? 'has-notes' : ''}`} aria-label={`Бытие ${c.number}:${v.number} — ${count ? `пояснений: ${count}` : 'пояснения к стиху'}`} aria-haspopup="dialog" onClick={() => showPanel({ type: 'verse', chapter: c.number, verse: v.number })}>{v.number}</button>
             <p>{annotatedText(v.text, v.number, c.number)}</p>
           </div>;
         })}
       </section>)}
-      {content && <footer className="reading-end"><BookOpen size={25} weight="light" aria-hidden="true" /><p>Бытие 1:1–2:3</p><span>Вы прочитали этот фрагмент</span><button className="text-button" onClick={() => showPanel({ type: 'notes' })}>Вернуться к пояснениям <CaretRight size={16} aria-hidden="true" /></button><small>Локальный пилот · пояснения — черновики</small></footer>}
+      {content && <footer className="reading-end"><BookOpen size={25} weight="light" aria-hidden="true" /><p>{content.scripture.reference}</p><span>Вы прочитали книгу</span><button className="text-button" onClick={() => showPanel({ type: 'notes' })}>Вернуться к пояснениям <CaretRight size={16} aria-hidden="true" /></button></footer>}
     </main>
     {updateWorker && <aside className="update-notice" role="status">
       <span>Доступен новый выпуск<small>Место чтения сохранится</small></span>
@@ -197,7 +238,7 @@ export function App() {
     <nav className="reading-dock" aria-label="Управление чтением">
       <button className="chapter-control" onClick={() => showPanel({ type: 'contents' })}><BookOpen size={21} weight="light" aria-hidden="true" /><span>Бытие {chapter}</span><CaretDown size={13} aria-hidden="true" /></button>
       <span className="dock-divider" aria-hidden="true" />
-      <button className="notes-control" aria-label={`Открыть все пояснения: ${notes.length}`} onClick={() => showPanel({ type: 'notes' })}><ChatTeardropText size={22} weight="light" aria-hidden="true" /><span>{notes.length}</span></button>
+      <button className="notes-control" aria-label={`Пояснения к главе ${chapter}: ${chapterNotes.length}`} onClick={() => showPanel({ type: 'notes' })}><ChatTeardropText size={22} weight="light" aria-hidden="true" /><span>{chapterNotes.length}</span></button>
       <button className="icon-button" aria-label="Настройки чтения" onClick={() => showPanel({ type: 'settings' })}><TextAa size={25} weight="light" aria-hidden="true" /></button>
     </nav>
 
@@ -215,27 +256,25 @@ export function App() {
           } else focusTarget.current?.focus({ preventScroll: true });
         }}>
         <Drawer.Handle aria-label="Потяните, чтобы развернуть пояснение" className="sheet-handle" />
-        <div className="sheet-toolbar"><span>{selectedNote ? noteReference(selectedNote) : 'Бытие · локальный пилот'}</span><div>
+        <div className="sheet-toolbar"><span>{selectedNote ? noteReference(selectedNote) : 'Книга Бытие'}</span><div>
           <button className="icon-button" aria-label={snap === 0.94 ? 'Свернуть панель' : 'Развернуть панель'} onClick={() => setSnap(snap === 0.94 ? 0.68 : 0.94)}>{snap === 0.94 ? <ArrowsInSimple size={20} aria-hidden="true" /> : <ArrowsOutSimple size={20} aria-hidden="true" />}</button>
           <Drawer.Close asChild><button className="icon-button close-button" aria-label="Закрыть панель"><X size={20} aria-hidden="true" /></button></Drawer.Close>
         </div></div>
         <div className="sheet-scroll" ref={scrollArea} key={panel.type === 'note' ? panel.id : panel.type}>
           <Drawer.Title className="sheet-title">{title}</Drawer.Title>
-          <Drawer.Description className="sr-only">{selectedNote ? 'Подготовленное пояснение к фразе. Черновик редакционного пересказа.' : 'Материалы и настройки текущего фрагмента.'}</Drawer.Description>
+          <Drawer.Description className="sr-only">{selectedNote ? 'Редакционное пояснение к библейскому тексту.' : 'Материалы и настройки чтения.'}</Drawer.Description>
           {selectedNote && <NoteBody note={selectedNote} />}
           {(panel.type === 'verse' || panel.type === 'phrase') && <><blockquote className="verse-quote">{selectedVerse?.text}</blockquote>{verseNotes.length ? noteList(verseNotes) : <p className="empty-note">К этому стиху пояснение ещё не подготовлено.</p>}</>}
-          {panel.type === 'notes' && <><p className="sheet-intro">Пояснений: {notes.length}. Краткие ответы, авторские аргументы и сопоставления. Все материалы пока в черновике.</p>{noteList(notes)}</>}
-          {panel.type === 'contents' && <><p className="sheet-intro">Сейчас доступен один фрагмент:<br />Бытие 1:1–2:3.</p><div className="contents-list">
-            <button className="chapter-row" onClick={() => jump('verse-1-1')}><span className="chapter-tile">1</span><span><strong>Глава 1</strong><small>Стихи 1–31 · пояснений: {notes.filter(n => n.chapter === 1).length}</small></span><CaretRight size={19} aria-hidden="true" /></button>
-            <button className="chapter-row" onClick={() => jump('chapter-2')}><span className="chapter-tile">2</span><span><strong>Глава 2</strong><small>Стихи 1–3 · пояснений: {notes.filter(n => n.chapter === 2).length}</small></span><CaretRight size={19} aria-hidden="true" /></button>
-          </div><p className="section-label">Перейти к стиху · глава {chapter}</p><div className="verse-grid">{content?.scripture.chapters.find(c => c.number === chapter)?.verses.map(v => <button key={v.number} onClick={() => jump(`verse-${chapter}-${v.number}`)} aria-label={`Перейти к Бытие ${chapter}:${v.number}`}>{v.number}</button>)}</div></>}
+          {panel.type === 'notes' && <><p className="sheet-intro">Глава {chapter}. Смысл стихов, контекст эпизодов и тематические разборы.</p>{noteList(chapterNotes)}</>}
+          {panel.type === 'contents' && <><p className="section-label">Перейти к стиху · глава {chapter}</p><div className="verse-grid">{content?.scripture.chapters.find(c => c.number === chapter)?.verses.map(v => <button key={v.number} onClick={() => jump(`verse-${chapter}-${v.number}`)} aria-label={`Перейти к Бытие ${chapter}:${v.number}`}>{v.number}</button>)}</div>
+          <div className="contents-list">{content?.scripture.chapters.map(c => <button key={c.number} className="chapter-row" onClick={() => jump(`chapter-${c.number}`)}><span className="chapter-tile" aria-hidden="true">{c.number}</span><span><strong>Глава {c.number}</strong><small>Стихи 1–{c.verses.length} · пояснений: {notesByChapter.get(c.number)?.length ?? 0}</small></span><CaretRight size={19} aria-hidden="true" /></button>)}</div></>}
           {panel.type === 'settings' && <><p className="sheet-intro">Настройте размер текста для спокойного чтения.</p><div className="type-preview" style={{ fontSize }}>В начале сотворил Бог<br />небо и землю.</div><div className="font-controls"><button className="icon-button" aria-label="Уменьшить текст" disabled={fontSize <= 18} onClick={() => setFontSize(fontSize - 1)}><Minus size={20} aria-hidden="true" /></button><output aria-live="polite">{fontSize} <small>px</small></output><button className="icon-button" aria-label="Увеличить текст" disabled={fontSize >= 30} onClick={() => setFontSize(fontSize + 1)}><Plus size={20} aria-hidden="true" /></button></div><p className="secondary">Масштабирование браузера тоже доступно.</p></>}
-          {panel.type === 'release' && <><p className="sheet-intro">Весь фрагмент и пояснения останутся с вами, даже когда нет связи.</p><div className="release-line"><BookOpen size={25} weight="light" aria-hidden="true" /><div><strong>Бытие 1:1–2:3</strong><small>34 стиха · пояснений: {notes.length}</small></div></div>
+          {panel.type === 'release' && <><p className="sheet-intro">Вся книга и пояснения останутся с вами, даже когда нет связи.</p><div className="release-line"><BookOpen size={25} weight="light" aria-hidden="true" /><div><strong>{content?.scripture.reference}</strong><small>Стихов: {verseCount} · пояснений: {notes.length}</small></div></div>
             <button className="primary-button" disabled={saving || saved} onClick={download}>{saving ? <><CircleNotch className="spinner" size={20} aria-hidden="true" />Сохраняем выпуск…</> : saved ? <><Check size={20} aria-hidden="true" />Выпуск на устройстве</> : <><DownloadSimple size={20} aria-hidden="true" />Сохранить выпуск</>}</button>
             <div className="save-status" role="status">{saved && 'Текст и пояснения доступны без интернета. Внешние страницы источников требуют соединения.'}</div>
             {saveError && <p className="save-error" role="alert">{saveError}</p>}
             <details className="disclosure"><summary>Установить на телефон<CaretDown size={18} aria-hidden="true" /></summary><div className="disclosure-body">{installPrompt ? <button className="secondary-button" onClick={async () => { try { await installPrompt.prompt(); setInstallPrompt(null); } catch { setSaveError('Не удалось открыть установку. Используйте меню браузера.'); } }}>Установить приложение</button> : <><p><strong>iPhone:</strong> в Safari откройте меню «Поделиться», затем «На экран “Домой”».</p><p><strong>Android:</strong> в меню браузера выберите «Установить приложение» или «Добавить на главный экран».</p></>}<p className="secondary">Для чтения без сети сначала сохраните выпуск.</p></div></details>
-            <details className="disclosure"><summary>О тексте и пояснениях<CaretDown size={18} aria-hidden="true" /></summary><div className="disclosure-body"><p>Синодальный перевод. Текст Писания сохранён в формулировках указанной цифровой редакции.</p>{content?.scripture.sources.map(s => <SourceLink key={s.url} source={s} />)}<p>Пояснения — редакционные разборы, подготовленные с помощью ИИ. Все материалы находятся в черновике и ожидают проверки редактором по источникам. Сопоставление — анализ редакции; оно не приписывается одному из упомянутых авторов.</p></div></details>
+            <details className="disclosure"><summary>О тексте и пояснениях<CaretDown size={18} aria-hidden="true" /></summary><div className="disclosure-body"><p>Синодальный перевод. Текст Писания сохранён в формулировках указанной цифровой редакции.</p>{content?.scripture.sources.map(s => <SourceLink key={s.url} source={s} />)}<p>Пояснения — редакционные разборы, подготовленные с помощью ИИ. Сопоставление — анализ редакции; оно не приписывается одному из упомянутых авторов.</p></div></details>
           </>}
           <div className="sheet-bottom-space" />
         </div>

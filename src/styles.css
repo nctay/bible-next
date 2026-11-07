@@ -77,9 +77,7 @@ h1 { margin: 0; font: 400 clamp(39px, 11vw, 49px)/1.14 'Lora', Georgia, serif; l
 .sheet-scroll { overflow-y: auto; overscroll-behavior: contain; padding: 7px 27px 0; max-height: calc(var(--visible-height) - 80px); scrollbar-width: thin; }
 .sheet-title { font: 400 30px/1.23 'Lora', Georgia, serif; letter-spacing: -.035em; margin: 0 0 22px; text-wrap: balance; }
 .note-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 7px 10px; color: var(--accent); font-size: 10px; line-height: 1.5; }
-.draft { color: var(--muted); background: #f0ede6; padding: 4px 7px; border-radius: 5px; }
 .note-summary { font: 400 18px/1.8 'Lora', Georgia, serif; margin: 21px 0 27px; }
-.editorial-label { font-size: 10px; color: var(--muted); margin: 15px 0 27px; }
 .disclosure { border-top: 1px solid var(--line); }
 .disclosure summary { list-style: none; display: flex; align-items: center; justify-content: space-between; min-height: 60px; cursor: pointer; gap: 12px; font-size: 13px; }
 .disclosure summary::-webkit-details-marker { display: none; }
@@ -151,3 +149,7 @@ h1 { margin: 0; font: 400 clamp(39px, 11vw, 49px)/1.14 'Lora', Georgia, serif; l
 .update-notice small { display: block; font-size: 10px; margin-top: 6px; }
 .update-notice button { min-height: 48px; padding: 0 10px; background: var(--surface); color: var(--accent); border-radius: 10px; font-size: 11px; }
 .update-notice button:focus-visible { outline-color: var(--surface); }
+
+.note-table { overflow-x: auto; margin: 12px 0; }
+.note-table table { width: 100%; border-collapse: collapse; }
+.note-table th, .note-table td { padding: 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }

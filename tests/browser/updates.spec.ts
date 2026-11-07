@@ -57,7 +57,7 @@ test.beforeEach(() => { changes.clear(); broken = null; failures = 0; });
 
 async function save(page) {
   await page.goto(origin);
-  await expect(page.locator('.verse')).toHaveCount(34);
+  await expect(page.locator('.verse')).toHaveCount(1533);
   await page.getByRole('button', { name: 'Сохранить выпуск без интернета', exact: true }).click();
   await page.getByRole('button', { name: 'Сохранить выпуск', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Выпуск на устройстве' })).toBeVisible();
@@ -77,7 +77,7 @@ async function checkUpdates(page) {
 
 test('a complete update waits for approval, refreshes both tabs, preserves place and font, and stays offline', async ({ page, context }) => {
   await save(page);
-  const other = await context.newPage(); await other.goto(origin); await expect(other.locator('.verse')).toHaveCount(34);
+  const other = await context.newPage(); await other.goto(origin); await expect(other.locator('.verse')).toHaveCount(1533);
   await page.getByRole('button', { name: 'Настройки чтения' }).click();
   for (let i = 0; i < 3; i++) await page.getByRole('button', { name: 'Увеличить текст' }).click();
   await page.keyboard.press('Escape');
@@ -90,12 +90,12 @@ test('a complete update waits for approval, refreshes both tabs, preserves place
   const otherReloaded = other.waitForEvent('load');
   await page.getByRole('button', { name: 'Обновить', exact: true }).click();
   await Promise.all([reloaded, otherReloaded]);
-  await expect(page.locator('.verse')).toHaveCount(34);
+  await expect(page.locator('.verse')).toHaveCount(1533);
   await expect.poll(async () => page.evaluate(async () => (await (await fetch('./content/notes.json')).json())[8].summary)).toContain('Обновлённый выпуск.');
   await expect.poll(async () => other.evaluate(async () => (await (await fetch('./content/notes.json')).json())[8].summary)).toContain('Обновлённый выпуск.');
   await expect(page.locator('.verse p').first()).toHaveCSS('font-size', '24px');
   await expect.poll(async () => Math.abs((await page.locator('#verse-1-26').evaluate(el => el.getBoundingClientRect().top)) - before)).toBeLessThan(4);
-  await context.setOffline(true); await page.reload(); await expect(page.locator('.verse')).toHaveCount(34);
+  await context.setOffline(true); await page.reload(); await expect(page.locator('.verse')).toHaveCount(1533);
   await page.getByRole('button', { name: 'сотворим — открыть пояснение', exact: true }).click();
   await expect(page.locator('.note-summary')).toContainText('Обновлённый выпуск.');
 });
@@ -106,7 +106,7 @@ test('interrupted or corrupted updates keep the saved release and a later retry 
   await expect.poll(() => failures).toBeGreaterThan(0);
   await expect.poll(async () => page.evaluate(async () => (await navigator.serviceWorker.getRegistration())!.installing?.state ?? 'none')).toBe('none');
   await expect(page.getByRole('button', { name: 'Обновить', exact: true })).toHaveCount(0);
-  await context.setOffline(true); await page.reload(); await expect(page.locator('.verse')).toHaveCount(34);
+  await context.setOffline(true); await page.reload(); await expect(page.locator('.verse')).toHaveCount(1533);
   expect(await page.evaluate(async () => (await (await fetch('./content/notes.json')).json())[8].summary)).toBe(originalNotes[8].summary);
   await context.setOffline(false); broken = 'integrity'; failures = 0; await checkUpdates(page);
   await expect.poll(() => failures).toBeGreaterThan(0);

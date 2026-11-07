@@ -1,0 +1,262 @@
+{
+  "anchors": {
+    "Что означает начало": {
+      "id": "beginning",
+      "verse": "1:1",
+      "phrase": "В начале"
+    },
+    "Что значит неустроенная земля": {
+      "id": "formless",
+      "verse": "1:2",
+      "phrase": "безвидна и пуста"
+    },
+    "Дух, дыхание или ветер": {
+      "id": "spirit",
+      "verse": "1:2",
+      "phrase": "Дух Божий"
+    },
+    "Почему свет раньше солнца": {
+      "id": "light",
+      "verse": "1:3",
+      "phrase": "да будет свет"
+    },
+    "Что такое день творения": {
+      "id": "day",
+      "verse": "1:5",
+      "phrase": "день один"
+    },
+    "Твердь и вода над небом": {
+      "id": "firmament",
+      "verse": "1:6",
+      "phrase": "твердь"
+    },
+    "Суша, растения и повторяющийся порядок": {
+      "id": "plants",
+      "verse": "1:9",
+      "phrase": "суша"
+    },
+    "Что читатель может не заметить в рассказе о животных": {
+      "id": "animals",
+      "verse": "1:20",
+      "phrase": "душу живую"
+    },
+    "Кому сказано «сотворим»": {
+      "id": "let-us",
+      "verse": "1:26",
+      "phrase": "сотворим"
+    },
+    "Образ Божий, мужчина и женщина": {
+      "id": "image",
+      "verse": "1:26",
+      "phrase": "по образу Нашему"
+    },
+    "Владычество как власть и ответственность": {
+      "id": "dominion",
+      "verse": "1:28",
+      "phrase": "владычествуйте"
+    },
+    "Растительная пища и благость мира": {
+      "id": "food",
+      "verse": "1:29",
+      "phrase": "в пищу"
+    },
+    "Почему Бог почил": {
+      "id": "rest",
+      "verse": "2:2",
+      "phrase": "почил"
+    },
+    "Почему Elohim имеет форму множественного числа": {
+      "id": "elohim",
+      "verse": "1:1",
+      "phrase": "Бог"
+    },
+    "Небо и земля: два объекта или весь мир": {
+      "id": "heaven-earth",
+      "verse": "1:1",
+      "phrase": "небо и землю"
+    },
+    "Тьма означает зло": {
+      "id": "darkness",
+      "verse": "1:2",
+      "phrase": "тьма"
+    },
+    "Как Бог говорит": {
+      "id": "god-speaks",
+      "verse": "1:3",
+      "phrase": "И сказал Бог"
+    },
+    "Зачем Бог даёт названия": {
+      "id": "naming",
+      "verse": "1:5",
+      "phrase": "И назвал Бог"
+    },
+    "Почему день один, а не первый": {
+      "id": "one-day",
+      "verse": "1:5",
+      "phrase": "день один"
+    },
+    "По роду означает биологический вид": {
+      "id": "kinds",
+      "verse": "1:11",
+      "phrase": "по роду"
+    },
+    "Знамения и времена: календарь или предсказание судьбы": {
+      "id": "seasons",
+      "verse": "1:14",
+      "phrase": "для знамений, и времен"
+    },
+    "Рыбы большие, киты или морские чудовища": {
+      "id": "sea-creatures",
+      "verse": "1:21",
+      "phrase": "рыб больших"
+    },
+    "Образ и подобие: два понятия или пояснение одного": {
+      "id": "likeness",
+      "verse": "1:26",
+      "phrase": "по подобию Нашему"
+    },
+    "После завершения творения Бог перестаёт действовать": {
+      "id": "providence",
+      "verse": "2:2",
+      "phrase": "И совершил Бог"
+    }
+  },
+  "sources": {
+    "https://www.newadvent.org/fathers/32011.htm": {
+      "author": "Василий Великий",
+      "attribution": "IV век; древний восточный христианский автор"
+    },
+    "https://www.newadvent.org/fathers/120111.htm": {
+      "author": "Августин",
+      "attribution": "IV–V века; древний латинский христианский автор"
+    },
+    "https://yalebiblestudy.org/courses/genesis/lessons/creation-study-guide/": {
+      "author": "Yale Bible Study",
+      "attribution": "Дата и индивидуальный автор на странице не указаны; институциональное учебное изложение"
+    },
+    "https://www.newadvent.org/fathers/32012.htm": {
+      "author": "Василий Великий",
+      "attribution": "IV век; древний восточный христианский автор"
+    },
+    "https://www.newadvent.org/fathers/110112.htm": {
+      "author": "Августин",
+      "attribution": "IV–V века; древний латинский христианский автор"
+    },
+    "https://bible.usccb.org/bible/genesis/1?bk=Genesis&ch=1": {
+      "author": "Редакция NABRE / USCCB",
+      "attribution": "2011; перевод и редакционные библейские примечания"
+    },
+    "https://www.vatican.va/content/catechism/en/part_one/section_two/chapter_one/article_1/paragraph_4_the_creator.html": {
+      "author": "Катехизис Католической церкви",
+      "attribution": "1992/1997; католический вероучительный документ"
+    },
+    "https://www.newadvent.org/fathers/32016.htm": {
+      "author": "Василий Великий",
+      "attribution": "IV век; древний восточный христианский автор"
+    },
+    "https://www.newadvent.org/fathers/110113.htm": {
+      "author": "Августин",
+      "attribution": "IV–V века; древний латинский христианский автор"
+    },
+    "https://www.opc.org/OS/html/V9/1c.html": {
+      "author": "Ли Айронс",
+      "attribution": "2000; индивидуальная реформатская статья"
+    },
+    "https://oyc.yale.edu/religious-studies/rlst-145/lecture-3": {
+      "author": "Кристин Хейс, Yale",
+      "attribution": "2006; авторская академическая лекция"
+    },
+    "https://learn.ligonier.org/articles/creation-doctrine-reformed-theology": {
+      "author": "Р. К. Спраул",
+      "attribution": "2011; индивидуальная реформатская статья"
+    },
+    "https://www.vatican.va/content/catechism/en/part_one/section_two/chapter_one/article_1/paragraph_5_heaven_and_earth.html": {
+      "author": "Катехизис Католической церкви",
+      "attribution": "1992/1997; католический вероучительный документ"
+    },
+    "https://www.newadvent.org/fathers/32013.htm": {
+      "author": "Василий Великий",
+      "attribution": "IV век; древний восточный христианский автор"
+    },
+    "https://www.newadvent.org/fathers/32015.htm": {
+      "author": "Василий Великий",
+      "attribution": "IV век; древний восточный христианский автор"
+    },
+    "https://ebible.org/russyn/GEN01.htm": {
+      "author": "Синодальный перевод · eBible.org",
+      "attribution": "Текст Писания; цифровая редакция приложения"
+    },
+    "https://www.newadvent.org/fathers/32019.htm": {
+      "author": "Василий Великий",
+      "attribution": "IV век; древний восточный христианский автор"
+    },
+    "https://www.newadvent.org/fathers/2914.htm": {
+      "author": "Григорий Нисский",
+      "attribution": "IV век; древний восточный христианский автор"
+    },
+    "https://www.vatican.va/content/catechism/en/part_one/section_two/chapter_one/article_1/paragraph_6_man.html": {
+      "author": "Катехизис Католической церкви",
+      "attribution": "1992/1997; католический вероучительный документ"
+    },
+    "https://www.opc.org/wcf.html": {
+      "author": "Вестминстерское исповедание, текст OPC",
+      "attribution": "XVII век; исповедальный документ реформатской традиции"
+    },
+    "https://www.oca.org/orthodoxy/the-orthodox-faith/doctrine-scripture/the-symbol-of-faith/man": {
+      "author": "Фома Хопко, The Orthodox Faith",
+      "attribution": "XX век; авторское православное катехизическое изложение, сайт OCA"
+    },
+    "https://www.vatican.va/content/francesco/en/encyclicals/documents/papa-francesco_20150524_enciclica-laudato-si.html": {
+      "author": "Франциск, Laudato si’",
+      "attribution": "2015; папская энциклика"
+    },
+    "https://ebible.org/russyn/GEN09.htm": {
+      "author": "Синодальный перевод · eBible.org",
+      "attribution": "Текст Писания; цифровая редакция приложения"
+    },
+    "https://tips.translation.bible/story/translation-commentary-on-genesis-11/": {
+      "author": "Рейберн и Фрай, UBS",
+      "attribution": "1997; авторское переводческое руководство, фрагменты размещены на TIPs с разрешением"
+    },
+    "https://tips.translation.bible/story/translation-commentary-on-genesis-15/": {
+      "author": "Рейберн и Фрай, UBS",
+      "attribution": "1997; авторское переводческое руководство, фрагменты размещены на TIPs с разрешением"
+    },
+    "https://tips.translation.bible/story/translation-commentary-on-genesis-111/": {
+      "author": "Рейберн и Фрай, UBS",
+      "attribution": "1997; авторское переводческое руководство, фрагменты размещены на TIPs с разрешением"
+    },
+    "https://tips.translation.bible/story/translation-commentary-on-genesis-114/": {
+      "author": "Рейберн и Фрай, UBS",
+      "attribution": "1997; авторское переводческое руководство, фрагменты размещены на TIPs с разрешением"
+    },
+    "https://www.sefaria.org/BDB%2C_%D7%AA%D6%B7%D6%BC%D7%A0%D6%B4%D6%BC%D7%99%D7%9F.1?lang=bi&with=Navigation": {
+      "author": "Brown, Driver, Briggs",
+      "attribution": "1906; исторический словарь библейского еврейского языка"
+    },
+    "https://tips.translation.bible/story/translation-commentary-on-genesis-121/": {
+      "author": "Рейберн и Фрай, UBS",
+      "attribution": "1997; авторское переводческое руководство, фрагменты размещены на TIPs с разрешением"
+    },
+    "https://www.newadvent.org/fathers/33042.htm": {
+      "author": "Иоанн Дамаскин",
+      "attribution": "VIII век; восточнохристианский отец"
+    },
+    "https://www.ccel.org/ccel/calvin/calcom01.vii.i.html": {
+      "author": "Жан Кальвин",
+      "attribution": "XVI век; индивидуальный реформатский комментарий"
+    },
+    "https://www.newadvent.org/fathers/0103506.htm": {
+      "author": "Ириней Лионский",
+      "attribution": "II век; древний христианский автор"
+    },
+    "https://www.newadvent.org/fathers/0103516.htm": {
+      "author": "Ириней Лионский",
+      "attribution": "II век; древний христианский автор"
+    },
+    "https://www.ccel.org/ccel/calvin/calcom01.viii.i.html": {
+      "author": "Жан Кальвин",
+      "attribution": "XVI век; индивидуальный реформатский комментарий"
+    }
+  }
+}
