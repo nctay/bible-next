@@ -85,10 +85,12 @@ test('reading controls clear the text and return on a short reverse scroll or ke
 
   await page.evaluate(() => window.scrollTo(0, 600));
   await expect(dock).not.toBeInViewport();
+  await expect(dock).toHaveCSS('opacity', '0');
   await page.evaluate(() => window.scrollBy(0, -6));
   await expect(dock).not.toBeInViewport();
   await page.evaluate(() => window.scrollBy(0, -8));
   await expect(dock).toBeInViewport();
+  await expect(dock).toHaveCSS('opacity', '1');
 
   await page.evaluate(() => window.scrollBy(0, 100));
   await expect(dock).not.toBeInViewport();

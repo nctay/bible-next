@@ -62,8 +62,8 @@ h1 { margin: 0; font: 400 clamp(39px, 11vw, 49px)/1.14 'Lora', Georgia, serif; l
 .reading-end > small { font-size: 10px; margin-top: 22px; color: var(--muted); }
 .text-button { min-height: 48px; display: inline-flex; gap: 4px; align-items: center; font-size: 12px; color: var(--accent); margin-top: 12px; }
 .reading-dock { --dock-bottom: calc(16px + env(safe-area-inset-bottom)); position: fixed; z-index: 6; bottom: var(--dock-bottom); left: 50%; transform: translateX(-50%); width: min(calc(100% - 48px), 346px); height: 62px; display: flex; align-items: center; padding: 7px 9px; border-radius: 32px; background: var(--surface); box-shadow: 0 6px 28px #302e2917, 0 1px 4px #302e2910; }
-.reading-dock { transition: transform var(--duration-press) var(--ease-out); }
-.reading-dock[data-hidden]:not(:has(:focus-visible)) { transform: translate(-50%, calc(100% + var(--dock-bottom) + 30px)); pointer-events: none; }
+.reading-dock { transition: transform 200ms var(--ease-out), opacity 200ms linear; }
+.reading-dock[data-hidden]:not(:has(:focus-visible)) { transform: translate(-50%, calc(100% + var(--dock-bottom))); opacity: 0; pointer-events: none; }
 .reading-dock:has(:focus-visible) { transition: none; }
 .chapter-control { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 13px; flex: 1; border-radius: 24px; font-size: 13px; white-space: nowrap; }
 .chapter-control > svg:last-child { margin-left: auto; }
@@ -148,7 +148,7 @@ h1 { margin: 0; font: 400 clamp(39px, 11vw, 49px)/1.14 'Lora', Georgia, serif; l
   .reading-dock { --dock-bottom: calc(8px + env(safe-area-inset-bottom)); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .reading-dock[data-hidden]:not(:has(:focus-visible)) { transform: translateX(-50%); opacity: 0; }
+  .reading-dock[data-hidden]:not(:has(:focus-visible)) { transform: translateX(-50%); }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
 .update-notice { position: fixed; z-index: 6; bottom: calc(92px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: min(calc(100% - 48px), 346px); background: var(--accent); color: var(--surface); padding: 12px 14px 12px 17px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; }
